@@ -1,0 +1,2 @@
+[control_plane]
+k8scp ansible_host=192.168.122.100 ansible_user=cp ansible_become=yes ansible_become_user=root
