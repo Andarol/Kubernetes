@@ -139,107 +139,29 @@
 - name: Add DNS alias for control plane in /etc/hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    line: "{{ ansible_default_ipv4.address }} k8scp"
+    line: "{{ hostvars['k8scp']['ansible_host'] }} k8scp"
     state: present
     insertbefore: BOF
 
 - name: Add DNS alias for cp in /etc/hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    line: "{{ ansible_default_ipv4.address }} cp"
+    line: "{{ hostvars['k8scp']['ansible_host'] }} cp"
     state: present
     insertbefore: BOF
 
-- name: Copy kubeadm config file
-  ansible.builtin.copy:
-    src: kubedm_config.yml
-    dest: /root/kubeadm-config.yaml
-    mode: '0644'
-
-- name: Initialize Kubernetes cluster with kubeadm
+- name: Join worker node to Kubernetes cluster
   ansible.builtin.shell: |
-    kubeadm init --config=/root/kubeadm-config.yaml --upload-certs --node-name=cp | tee /root/kubeadm-init.out
-  timeout: 1800
-  register: kubeadm_result
-
-- name: Create root .kube directory
-  ansible.builtin.file:
-    path: /root/.kube
-    state: directory
-    mode: '0755'
+    {{ hostvars['join_command_holder']['kubeadm_join_cmd'] }} --node-name={{ ansible_hostname }}
+  register: join_result
   become: true
+  changed_when: join_result.rc == 0
+  failed_when: 
+    - join_result.rc != 0
+    - "'already exists' not in join_result.stderr"
 
-- name: Copy admin.conf to root .kube directory
-  ansible.builtin.shell: cp /etc/kubernetes/admin.conf /root/.kube/config
-  become: true
+- name: Display join result
+  ansible.builtin.debug:
+    var: join_result.stdout_lines
 
-- name: Create .kube directory for cp user
-  ansible.builtin.file:
-    path: /home/cp/.kube
-    state: directory
-    mode: '0755'
-    owner: cp
-    group: cp
 
-- name: Copy admin.conf to cp user .kube directory
-  ansible.builtin.copy:
-    src: /etc/kubernetes/admin.conf
-    dest: /home/cp/.kube/config
-    remote_src: yes
-    owner: cp
-    group: cp
-    mode: '0600'
-
-- name: Install bash-completion package
-  ansible.builtin.package:
-    name: bash-completion
-    state: present
-
-- name: Enable kubectl bash completion for cp user
-  ansible.builtin.lineinfile:
-    path: /home/cp/.bashrc
-    line: "source <(kubectl completion bash)"
-    state: present
-    create: yes
-
-- name: Copy cilium-cni.yaml to control plane
-  ansible.builtin.copy:
-    src: cilium_cni.yaml
-    dest: /root/cilium-cni.yaml
-    mode: '0644'
-
-- name: Wait for Kubernetes API server to be ready
-  ansible.builtin.shell: kubectl --kubeconfig=/root/.kube/config cluster-info
-  register: api_ready
-  retries: 30
-  delay: 10
-  until: api_ready.rc == 0
-  become: true
-
-- name: Apply Cilium CNI
-  ansible.builtin.shell: |
-    kubectl --kubeconfig=/root/.kube/config apply -f /root/cilium-cni.yaml --validate=false
-  register: cilium_install
-  changed_when: cilium_install.rc == 0
-  become: true
-
-- name: Generate kubeadm join token and command
-  ansible.builtin.shell: kubeadm token create --print-join-command
-  register: join_command
-  become: true
-
-- name: Save join command to file
-  ansible.builtin.copy:
-    content: "{{ join_command.stdout }}"
-    dest: /root/kubeadm-join-command.sh
-    mode: '0755'
-  become: true
-
-- name: Store join command as a fact
-  ansible.builtin.set_fact:
-    kubeadm_join_command: "{{ join_command.stdout }}"
-
-- name: Add join command to dummy host for worker nodes
-  ansible.builtin.add_host:
-    name: "join_command_holder"
-    kubeadm_join_cmd: "{{ join_command.stdout }}"

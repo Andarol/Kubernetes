@@ -4,3 +4,9 @@
   become: true
   roles:
     - k8s_cp
+
+- name: Configure Kubernetes Worker Nodes
+  hosts: workers
+  become: true
+  roles:
+    - k8s_worker

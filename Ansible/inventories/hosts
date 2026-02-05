@@ -1,2 +1,6 @@
 [control_plane]
 k8scp ansible_host=192.168.122.100 ansible_user=cp ansible_become=yes ansible_become_user=root
+
+[workers]
+worker1 ansible_host=192.168.122.101 ansible_user=worker ansible_become=yes ansible_become_user=root
+worker2 ansible_host=192.168.122.102 ansible_user=worker ansible_become=yes ansible_become_user=root
