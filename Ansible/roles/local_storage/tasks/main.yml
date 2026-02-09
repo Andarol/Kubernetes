@@ -1,0 +1,37 @@
+---
+  - name: Create base storage directory on gitlab node
+    file:
+      path: /mnt/k8s-data
+      state: directory
+      mode: '0777'
+    delegate_to: gitlab
+
+  - name: Copy storage provisioner manifest
+    copy:
+      src: local-path-storage.yaml
+      dest: /tmp/local-path-storage.yaml
+      mode: '0644'
+
+  - name: Deploy local-path provisioner
+    kubernetes.core.k8s:
+      src: /tmp/local-path-storage.yaml
+      state: present
+
+  - name: Wait for provisioner to be ready
+    shell: kubectl get deployment local-path-provisioner -n local-path-storage -o jsonpath='{.status.availableReplicas}'
+    register: provisioner_status
+    until: provisioner_status.stdout == "1"
+    retries: 30
+    delay: 10
+
+  - name: Verify StorageClass is created
+    shell: kubectl get storageclass local-path
+    register: sc_check
+    changed_when: false
+
+  - name: Display storage info
+    debug:
+      msg: 
+        - "Dynamic storage provisioner deployed"
+        - "StorageClass 'local-path' is ready and set as default"
+        - "PersistentVolumes will be created automatically in /mnt/k8s-data"
