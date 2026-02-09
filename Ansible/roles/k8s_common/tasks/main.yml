@@ -18,6 +18,7 @@
       - software-properties-common
       - ca-certificates
       - socat
+      - python3-pip
     state: latest
 
 - name: disable swap immediately

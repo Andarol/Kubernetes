@@ -1,0 +1,47 @@
+---
+  - name: Create the 'argocd' namespace
+    kubernetes.core.k8s:
+      name: argocd
+      api_version: v1
+      kind: Namespace
+      state: present
+
+  - name: Install ArgoCD using kubectl manifest
+    shell: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    register: argocd_install
+    changed_when: "'created' in argocd_install.stdout or 'configured' in argocd_install.stdout"
+
+
+  - name: Wait for ArgoCD StatefulSet to be ready
+    shell: kubectl wait --for=jsonpath='{.status.readyReplicas}'=1 --timeout=300s statefulset/argocd-application-controller -n argocd
+    retries: 3
+    delay: 10
+
+  - name: Patch ArgoCD server service to NodePort
+    shell: kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
+    register: patch_result
+    changed_when: "'patched' in patch_result.stdout"
+
+  - name: Get ArgoCD server NodePort
+    shell: kubectl get svc argocd-server -n argocd -o jsonpath='{.spec.ports[?(@.port==443)].nodePort}'
+    register: argocd_https_port
+
+  - name: Get ArgoCD initial admin password
+    kubernetes.core.k8s_info:
+      kind: Secret
+      name: argocd-initial-admin-secret
+      namespace: argocd
+    register: argocd_secret
+    retries: 13
+    delay: 1
+    until: argocd_secret.resources | length > 0
+
+  - name: Display ArgoCD admin password
+    debug:
+      msg: "ArgoCD admin password: {{ argocd_secret.resources[0].data.password | b64decode }}"
+    when: argocd_secret.resources | length > 0
+
+  - name: Display ArgoCD access information
+    debug:
+      msg:
+        - "ArgoCD is accessible at: https://{{ ansible_host }}:{{ argocd_https_port.stdout }}"

@@ -6,6 +6,7 @@
     - inventories/vault.yml
   roles:
     - k8s_cp
+    - helm
 
 - name: Configure Kubernetes Worker Nodes
   hosts: workers
@@ -14,3 +15,11 @@
     - inventories/vault.yml
   roles:
     - k8s_worker
+
+- name: Install ArgoCD
+  hosts: control_plane
+  become: true
+  vars_files:
+    - inventories/vault.yml
+  roles:
+    - argocd
