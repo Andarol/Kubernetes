@@ -1,2 +1,9 @@
+[all:vars]
+ansible_become_password="{{ ansible_become_password }}"
+
 [control_plane]
-k8scp ansible_host=192.168.122.100 ansible_user=cp ansible_become=yes ansible_become_user=root
+k8scp ansible_host=192.168.122.100 ansible_user=cp ansible_ssh_pass="{{ cp_user_password }}" ansible_become=yes ansible_become_user=root
+
+[workers]
+worker1 ansible_host=192.168.122.96 ansible_user=worker ansible_ssh_pass="{{ worker_user_password }}" ansible_become=yes ansible_become_user=root
+worker2 ansible_host=192.168.122.97 ansible_user=worker ansible_ssh_pass="{{ worker_user_password }}" ansible_become=yes ansible_become_user=root
