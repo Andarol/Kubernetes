@@ -7,7 +7,6 @@
   roles:
     - k8s_cp
     - helm
-    - local_storage
 
 - name: Configure Kubernetes Worker Nodes
   hosts: workers
@@ -17,18 +16,18 @@
   roles:
     - k8s_worker
 
-- name: Install ArgoCD
+- name: Configure Storage Provisioner
   hosts: control_plane
   become: true
   vars_files:
     - inventories/vault.yml
   roles:
-    - argocd
+    - local_storage
 
-- name: Install GitLab
-  hosts: control_plane
-  become: true
-  vars_files:
-    - inventories/vault.yml
-  roles:
-    - gitlab
+# - name: Install ArgoCD
+#   hosts: control_plane
+#   become: true
+#   vars_files:
+#     - inventories/vault.yml
+#   roles:
+#     - argocd
