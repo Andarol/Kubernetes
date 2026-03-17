@@ -57,6 +57,8 @@ spec:
         app: local-path-provisioner
     spec:
       serviceAccountName: local-path-provisioner-service-account
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
       containers:
         - name: local-path-provisioner
           image: rancher/local-path-provisioner:v0.0.28
