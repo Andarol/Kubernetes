@@ -1,0 +1,15 @@
+server:
+  service:
+    type: "{{ argocd_server_service_type }}"
+  ingress:
+    enabled: {{ argocd_ingress_enabled | bool }}
+    ingressClassName: "{{ argocd_ingress_class_name }}"
+    annotations: {{ argocd_ingress_annotations | default({}) | to_json }}
+    path: "{{ argocd_ingress_path }}"
+    pathType: "{{ argocd_ingress_path_type }}"
+    hosts: {{ argocd_ingress_hosts | default([]) | to_json }}
+    tls: {{ argocd_ingress_tls | default([]) | to_json }}
+
+configs:
+  params:
+    server.insecure: {{ (argocd_server_insecure | bool) | ternary('"true"', '"false"') }}

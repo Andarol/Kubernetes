@@ -1,0 +1,21 @@
+---
+istio_repo_name: istio
+istio_repo_url: https://istio-release.storage.googleapis.com/charts
+
+istio_system_namespace: istio-system
+istio_ingress_namespace: istio-ingress
+
+istio_base_chart_ref: istio/base
+istio_istiod_chart_ref: istio/istiod
+istio_gateway_chart_ref: istio/gateway
+
+istio_ingress_service_type: NodePort
+
+# Namespaces that should get sidecar injection and strict mTLS.
+istio_secure_namespaces:
+  - argocd
+
+# Optional hostnames to expose Argo CD through Istio gateway.
+istio_argocd_hosts:
+  - argocd.home.lab
+argocd_url_scheme: http

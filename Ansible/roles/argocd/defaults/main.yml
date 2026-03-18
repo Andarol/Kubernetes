@@ -1,0 +1,26 @@
+---
+argocd_namespace: argocd
+argocd_helm_release_name: argocd
+argocd_helm_repo_name: argo
+argocd_helm_repo_url: https://argoproj.github.io/argo-helm
+argocd_helm_chart_ref: argo/argo-cd
+argocd_helm_chart_version: "9.3.7"
+argocd_server_service_type: NodePort
+
+argocd_ingress_enabled: false
+argocd_ingress_class_name: cilium
+argocd_url_scheme: http
+argocd_ingress_hosts:
+  - argocd.home.lab
+argocd_ingress_path: /
+argocd_ingress_path_type: Prefix
+argocd_server_insecure: true
+argocd_ingress_annotations: {}
+argocd_ingress_tls: []
+
+argocd_app_of_apps_enabled: true
+argocd_app_of_apps_name: app-of-apps
+argocd_apps_repo_url: https://github.com/Andarol/Kubernetes.git
+argocd_apps_target_revision: main
+argocd_apps_path: argocd/apps
+argocd_apps_project: default
