@@ -9,6 +9,10 @@ spec:
     repoURL: https://charts.bitnami.com/bitnami
     chart: wordpress
     targetRevision: "*"
+    helm:
+      values: |
+        service:
+          type: NodePort
   destination:
     server: https://kubernetes.default.svc
     namespace: wordpress
