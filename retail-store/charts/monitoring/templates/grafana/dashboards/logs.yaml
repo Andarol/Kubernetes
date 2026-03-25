@@ -1,0 +1,83 @@
+{{- if and .Values.externalDashboards.enabled .Values.externalDashboards.dashboards.logs.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    grafana_dashboard: "1"
+  name: logs-dashboard
+data:
+  logs.json: |-
+    {
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "VictoriaLogs"
+          },
+          "gridPos": {
+            "h": 14,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 1,
+          "options": {
+            "dedupStrategy": "none",
+            "enableInfiniteScrolling": false,
+            "enableLogDetails": true,
+            "showControls": false,
+            "showTime": false,
+            "sortOrder": "Descending",
+            "wrapLogMessage": false
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "VictoriaLogs"
+              },
+              "direction": "desc",
+              "editorMode": "builder",
+              "expr": "kubernetes.pod_namespace: \"$namespace\" AND kubernetes.pod_name: \"$pod\"",
+              "queryType": "instant",
+              "refId": "A"
+            }
+          ],
+          "title": "Logs",
+          "type": "logs"
+        }
+      ],
+      "schemaVersion": 42,
+      "templating": {
+        "list": [
+          {
+            "name": "namespace",
+            "type": "query",
+            "datasource": { "type": "prometheus", "uid": "default" },
+            "definition": "label_values(kube_pod_info,namespace)",
+            "query": "label_values(kube_pod_info,namespace)",
+            "refresh": 1
+          },
+          {
+            "name": "pod",
+            "type": "query",
+            "datasource": { "type": "prometheus", "uid": "default" },
+            "definition": "label_values(kube_pod_info{namespace=\"$namespace\"},pod)",
+            "query": "label_values(kube_pod_info{namespace=\"$namespace\"},pod)",
+            "refresh": 1
+          }
+        ]
+      },
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
+      "title": "Logs",
+      "uid": "ad5gvj6",
+      "version": 3
+    }
+{{- end }}

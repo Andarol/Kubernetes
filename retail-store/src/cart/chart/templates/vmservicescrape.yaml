@@ -1,0 +1,21 @@
+{{- if and .Values.metrics.enabled .Values.metrics.vmScrape.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ include "carts.fullname" . }}
+  labels:
+    {{- include "carts.labels" . | nindent 4 }}
+    managed-by: victoriametrics-operator
+spec:
+  selector:
+    matchLabels:
+      {{- include "carts.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: {{ .Values.metrics.vmScrape.servicePortName | default "http" }}
+      path: {{ .Values.metrics.vmScrape.path | default (index .Values.metrics.podAnnotations "prometheus.io/path") | default "/metrics" }}
+      interval: {{ .Values.metrics.vmScrape.interval | default "30s" }}
+      {{- if .Values.metrics.vmScrape.relabelConfigs }}
+      relabelConfigs:
+        {{- toYaml .Values.metrics.vmScrape.relabelConfigs | nindent 8 }}
+      {{- end }}
+{{- end }}

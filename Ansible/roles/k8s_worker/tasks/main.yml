@@ -3,20 +3,6 @@
   ansible.builtin.include_role:
     name: k8s_common
 
-- name: Add DNS alias for control plane in /etc/hosts
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    line: "{{ hostvars['k8scp']['ansible_host'] }} k8scp"
-    state: present
-    insertbefore: BOF
-
-- name: Add DNS alias for cp in /etc/hosts
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    line: "{{ hostvars['k8scp']['ansible_host'] }} cp"
-    state: present
-    insertbefore: BOF
-
 - name: Join worker node to Kubernetes cluster
   ansible.builtin.shell: |
     {{ hostvars['join_command_holder']['kubeadm_join_cmd'] }} --node-name={{ inventory_hostname }}

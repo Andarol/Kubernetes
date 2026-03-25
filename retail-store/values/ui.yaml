@@ -1,0 +1,27 @@
+image:
+  repository: "696390945977.dkr.ecr.eu-central-1.amazonaws.com/ui"
+  tag: "1.0.0"
+
+app:
+  endpoints:
+    catalog: http://catalog.catalog.svc:80
+    carts: http://carts.carts.svc:80
+    orders: http://orders.orders.svc:80
+    checkout: http://checkout.checkout.svc:80
+
+opentelemetry:
+  enabled: true
+  instrumentation: "opentelemetry-operator-system/default-instrumentation"
+
+service:
+  type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external 
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
+
+securityGroups:
+  create: true
+  # securityGroupIds:
+  #   - 'sg-05f3d57867664386a' # This is a placeholder, user needs to update or I will find it.

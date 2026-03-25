@@ -20,23 +20,9 @@
   register: cp_ip
   changed_when: false
 
-- name: Add DNS alias for control plane in /etc/hosts
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    line: "{{ ansible_default_ipv4.address }} k8scp"
-    state: present
-    insertbefore: BOF
-
-- name: Add DNS alias for cp in /etc/hosts
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    line: "{{ ansible_default_ipv4.address }} cp"
-    state: present
-    insertbefore: BOF
-
-- name: Copy kubeadm config file
-  ansible.builtin.copy:
-    src: kubedm_config.yml
+- name: Render kubeadm config file with control plane IP
+  ansible.builtin.template:
+    src: kubedm_config.yml.j2
     dest: /root/kubeadm-config.yaml
     mode: '0644'
 

@@ -3,44 +3,22 @@ kind: Application
 metadata:
   name: monitoring
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
 spec:
-  project: default
-  source:
-    repoURL: https://victoriametrics.github.io/helm-charts/
-    chart: victoria-metrics-k8s-stack
-    targetRevision: "*"
-    helm:
-      values: |
-        fullnameOverride: monitoring
-
-        # Keep single-node mode for homelab/private clusters.
-        vmcluster:
-          enabled: false
-        vmsingle:
-          enabled: true
-          spec:
-            retentionPeriod: "14d"
-
-        alertmanager:
-          enabled: false
-
-        grafana:
-          enabled: true
-          service:
-            type: NodePort
-
-        kubeStateMetrics:
-          enabled: true
-        nodeExporter:
-          enabled: true
-        kubelet:
-          enabled: true
-
-        defaultRules:
-          create: true
   destination:
+    namespace: 'monitoring'
     server: https://kubernetes.default.svc
-    namespace: monitoring
+  source:
+    path: charts/monitoring
+    repoURL: https://github.com/Andarol/Kubernetes.git
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values.yaml
+  project: default
   syncPolicy:
     automated:
       prune: true

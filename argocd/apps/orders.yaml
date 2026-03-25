@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: orders
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  destination:
+    namespace: 'orders'
+    server: https://kubernetes.default.svc
+  source:
+    path: src/orders/chart
+    repoURL: https://github.com/Andarol/Kubernetes.git
+    targetRevision: main
+    helm:
+      valueFiles:
+        - /retail-store/values/orders.yaml
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
