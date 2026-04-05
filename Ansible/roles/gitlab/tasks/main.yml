@@ -172,16 +172,28 @@
   loop_control:
     label: "{{ item.name }}"
 
+- name: Unprotect main branch to allow force push
+  ansible.builtin.uri:
+    url: "{{ gitlab_external_url }}/api/v4/projects/root%2F{{ item.name }}/protected_branches/main"
+    method: DELETE
+    headers:
+      PRIVATE-TOKEN: "{{ gitlab_api_token }}"
+    status_code:
+      - 204
+      - 404
+  loop: "{{ gitlab_projects }}"
+  loop_control:
+    label: "{{ item.name }}"
+
 - name: Push code to GitLab projects
   ansible.builtin.shell: |
     cd "{{ item.local_path }}"
-    git push "http://root:${GITLAB_TOKEN}@{{ ansible_host }}/root/{{ item.name }}.git" main --force
+    git push "http://root:${GITLAB_TOKEN}@{{ ansible_host }}/root/{{ item.name }}.git" main --force 2>&1
   environment:
     GITLAB_TOKEN: "{{ gitlab_api_token }}"
   delegate_to: localhost
   become: false
   changed_when: true
-  no_log: true
   loop: "{{ gitlab_projects }}"
   loop_control:
     label: "{{ item.name }}"
