@@ -13,6 +13,12 @@ gitlab_startup_retries: 60
 gitlab_startup_delay: 10
 
 gitlab_api_token: "glpat-ansible-auto-token"
-gitlab_project_name: retail-store
 gitlab_runner_image: gitlab/gitlab-runner:latest
-retail_store_local_path: "{{ playbook_dir }}/../retail-store"
+
+gitlab_projects:
+  - name: ansible
+    local_path: "{{ playbook_dir }}"
+  - name: argocd
+    local_path: "{{ playbook_dir }}/../argocd"
+  - name: retail-store
+    local_path: "{{ playbook_dir }}/../retail-store"
