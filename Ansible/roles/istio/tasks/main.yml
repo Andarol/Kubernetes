@@ -57,6 +57,11 @@
       service:
         type: "{{ istio_ingress_service_type }}"
 
+- name: Wait for istiod validation webhook to be ready
+  ansible.builtin.command: >-
+    kubectl wait --for=condition=Ready pod -l app=istiod -n {{ istio_system_namespace }} --timeout=120s
+  changed_when: false
+
 - name: Enable sidecar injection on secure namespaces
   ansible.builtin.command: >-
     kubectl label namespace {{ item }} istio-injection=enabled --overwrite

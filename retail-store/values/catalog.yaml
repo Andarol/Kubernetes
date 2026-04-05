@@ -1,7 +1,3 @@
-image:
-  repository: "696390945977.dkr.ecr.eu-central-1.amazonaws.com/catalog"
-  tag: "1.0.0"
-
 opentelemetry:
   enabled: true
   instrumentation: "opentelemetry-operator-system/default-instrumentation"

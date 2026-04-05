@@ -1,0 +1,18 @@
+---
+gitlab_container_name: gitlab
+gitlab_image: gitlab/gitlab-ce:latest
+gitlab_base_dir: /srv/gitlab
+gitlab_compose_dir: /opt/gitlab
+gitlab_external_url: "http://{{ ansible_host }}"
+gitlab_http_port: 80
+gitlab_https_port: 443
+gitlab_ssh_port: 2224
+gitlab_registry_port: 5050
+gitlab_shm_size: 256m
+gitlab_startup_retries: 60
+gitlab_startup_delay: 10
+
+gitlab_api_token: "glpat-ansible-auto-token"
+gitlab_project_name: retail-store
+gitlab_runner_image: gitlab/gitlab-runner:latest
+retail_store_local_path: "{{ playbook_dir }}/../retail-store"

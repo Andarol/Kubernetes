@@ -32,3 +32,11 @@
     - inventories/vault.yml
   roles:
     - argocd
+
+- name: Install GitLab on control node
+  hosts: control_plane[0]
+  become: true
+  vars_files:
+    - inventories/vault.yml
+  roles:
+    - gitlab

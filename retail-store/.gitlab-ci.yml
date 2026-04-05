@@ -1,0 +1,42 @@
+stages:
+  - build
+
+variables:
+  DOCKER_HOST: unix:///var/run/docker.sock
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+.build:
+  stage: build
+  tags:
+    - docker
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE/$COMPONENT:$CI_COMMIT_SHORT_SHA" -t "$CI_REGISTRY_IMAGE/$COMPONENT:latest" "src/$COMPONENT"
+    - docker push "$CI_REGISTRY_IMAGE/$COMPONENT:$CI_COMMIT_SHORT_SHA"
+    - docker push "$CI_REGISTRY_IMAGE/$COMPONENT:latest"
+
+build-cart:
+  extends: .build
+  variables:
+    COMPONENT: cart
+
+build-catalog:
+  extends: .build
+  variables:
+    COMPONENT: catalog
+
+build-checkout:
+  extends: .build
+  variables:
+    COMPONENT: checkout
+
+build-orders:
+  extends: .build
+  variables:
+    COMPONENT: orders
+
+build-ui:
+  extends: .build
+  variables:
+    COMPONENT: ui
