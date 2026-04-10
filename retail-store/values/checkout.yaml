@@ -1,6 +1,6 @@
 image:
-  repository: "696390945977.dkr.ecr.eu-central-1.amazonaws.com/checkout"
-  tag: "2.0.0"
+  repository: "192.168.122.100:5050/root/retail-store/checkout"
+  tag: "latest"
 
 opentelemetry:
   enabled: true
