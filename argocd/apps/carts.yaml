@@ -12,7 +12,7 @@ spec:
     namespace: 'carts'
     server: https://kubernetes.default.svc
   source:
-    path: src/cart/chart
+    path: retail-store/src/cart/chart
     repoURL: https://github.com/Andarol/Kubernetes.git
     targetRevision: main
     helm:

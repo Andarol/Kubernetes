@@ -12,7 +12,7 @@ spec:
     namespace: 'orders'
     server: https://kubernetes.default.svc
   source:
-    path: src/orders/chart
+    path: retail-store/src/orders/chart
     repoURL: https://github.com/Andarol/Kubernetes.git
     targetRevision: main
     helm:

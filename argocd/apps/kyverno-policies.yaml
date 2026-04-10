@@ -12,7 +12,7 @@ spec:
     namespace: 'kyverno'
     server: https://kubernetes.default.svc
   source:
-    path: charts/kyverno-policies
+    path: retail-store/charts/kyverno-policies
     repoURL: https://github.com/Andarol/Kubernetes.git
     targetRevision: main
     helm:
