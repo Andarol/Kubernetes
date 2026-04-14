@@ -276,6 +276,7 @@
         - build
     status_code: 201
   register: runner_api_result
+  changed_when: true
   when: "'Executor=' not in (runner_list.stdout | default(''))"
 
 - name: Register GitLab Runner
