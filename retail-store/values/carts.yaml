@@ -1,0 +1,17 @@
+image:
+  repository: "192.168.122.100:5050/root/retail-store/cart"
+  tag: "dc9d979f"
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::696390945977:role/stage-retail-store-carts-dynamo"
+
+opentelemetry:
+  enabled: true
+  instrumentation: "opentelemetry-operator-system/default-instrumentation"
+
+app:
+  persistence:
+    provider: dynamodb
+    dynamodb:
+      tableName: "stage-retail-store-carts"
