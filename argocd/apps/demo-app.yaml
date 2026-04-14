@@ -8,8 +8,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Andarol/Kubernetes.git
-    path: demo-app/chart
+    repoURL: http://192.168.122.100/root/demo-app.git
+    path: chart
     targetRevision: HEAD
     helm:
       values: |
