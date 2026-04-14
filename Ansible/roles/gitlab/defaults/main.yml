@@ -20,5 +20,5 @@ gitlab_projects:
     local_path: "{{ playbook_dir }}"
   - name: argocd
     local_path: "{{ playbook_dir }}/../argocd"
-  - name: retail-store
-    local_path: "{{ playbook_dir }}/../retail-store"
+  - name: demo-app
+    local_path: "{{ playbook_dir }}/../demo-app"
