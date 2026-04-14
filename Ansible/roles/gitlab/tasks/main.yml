@@ -88,7 +88,7 @@
     regexp: '^\s*config_path = ""'
     line: '      config_path = "/etc/containerd/certs.d"'
   delegate_to: "{{ item }}"
-  loop: "{{ groups['all'] }}"
+  loop: "{{ groups['control_plane'] + groups['workers'] }}"
   register: containerd_config_path
 
 - name: Create containerd registry config directory on all nodes
@@ -97,7 +97,7 @@
     state: directory
     mode: '0755'
   delegate_to: "{{ item }}"
-  loop: "{{ groups['all'] }}"
+  loop: "{{ groups['control_plane'] + groups['workers'] }}"
 
 - name: Configure containerd to use HTTP for GitLab registry on all nodes
   ansible.builtin.copy:
@@ -110,7 +110,7 @@
     dest: "/etc/containerd/certs.d/{{ ansible_host }}:{{ gitlab_registry_port }}/hosts.toml"
     mode: '0644'
   delegate_to: "{{ item }}"
-  loop: "{{ groups['all'] }}"
+  loop: "{{ groups['control_plane'] + groups['workers'] }}"
   register: containerd_registry_config
 
 - name: Restart containerd on all nodes
@@ -118,7 +118,7 @@
     name: containerd
     state: restarted
   delegate_to: "{{ item }}"
-  loop: "{{ groups['all'] }}"
+  loop: "{{ groups['control_plane'] + groups['workers'] }}"
   when: containerd_config_path.changed or containerd_registry_config.changed
 
 # --- Create API token and project ---

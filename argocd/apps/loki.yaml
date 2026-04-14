@@ -36,6 +36,9 @@ spec:
             datasources:
               enabled: true
               isDefaultDatasource: false
+        loki-stack:
+          datasource:
+            isDefault: false
   project: default
   syncPolicy:
     automated:
