@@ -260,5 +260,5 @@
     msg:
       - "GitLab: {{ gitlab_external_url }}"
       - "Registry: {{ ansible_host }}:{{ gitlab_registry_port }}"
-      - "Projects: ansible, argocd, retail-store"
+      - "Projects: ansible, argocd, demo-app"
       - "Runner: docker-builder (docker executor)"

@@ -1,0 +1,36 @@
+global:
+  registry: ""
+
+frontend:
+  image:
+    repository: frontend
+    tag: "latest"
+  replicas: 1
+  service:
+    type: NodePort
+    port: 80
+
+backend:
+  image:
+    repository: backend
+    tag: "latest"
+  replicas: 1
+  env:
+    APP_VERSION: "1.0.0"
+  service:
+    port: 8080
+
+db:
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  storage: 1Gi
+  env:
+    POSTGRES_DB: appdb
+    POSTGRES_USER: appuser
+    POSTGRES_PASSWORD: apppass
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-app-db
+  labels:
+    app: simple-app
+    component: db
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: simple-app
+    component: db
+  ports:
+    - port: 5432
+      targetPort: 5432

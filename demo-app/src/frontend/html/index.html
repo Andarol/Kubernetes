@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple App - Task Manager</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #333; }
+        .container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        h1 { text-align: center; margin-bottom: 8px; color: #1a73e8; }
+        .version { text-align: center; color: #888; margin-bottom: 24px; font-size: 14px; }
+        .add-form { display: flex; gap: 8px; margin-bottom: 24px; }
+        .add-form input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .add-form button { padding: 12px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .add-form button:hover { background: #1557b0; }
+        .task-list { list-style: none; }
+        .task { background: white; padding: 16px; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .task.done span { text-decoration: line-through; color: #999; }
+        .task input[type=checkbox] { width: 20px; height: 20px; cursor: pointer; }
+        .task span { flex: 1; font-size: 16px; }
+        .task button { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .task button:hover { background: #c82333; }
+        .status { text-align: center; padding: 20px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Task Manager</h1>
+        <div class="version" id="version">Loading...</div>
+        <div class="add-form">
+            <input type="text" id="taskInput" placeholder="Add a new task..." onkeypress="if(event.key==='Enter')addTask()">
+            <button onclick="addTask()">Add</button>
+        </div>
+        <ul class="task-list" id="taskList"></ul>
+        <div class="status" id="status"></div>
+    </div>
+    <script>
+        const API = '/api';
+
+        async function loadVersion() {
+            try {
+                const res = await fetch(`${API}/version`);
+                const data = await res.json();
+                document.getElementById('version').textContent = `v${data.version}`;
+            } catch {
+                document.getElementById('version').textContent = 'API unavailable';
+            }
+        }
+
+        async function loadTasks() {
+            try {
+                const res = await fetch(`${API}/tasks`);
+                const tasks = await res.json();
+                const list = document.getElementById('taskList');
+                if (tasks.length === 0) {
+                    list.innerHTML = '';
+                    document.getElementById('status').textContent = 'No tasks yet. Add one!';
+                    return;
+                }
+                document.getElementById('status').textContent = '';
+                list.innerHTML = tasks.map(t => `
+                    <li class="task ${t.done ? 'done' : ''}">
+                        <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${t.id})">
+                        <span>${t.title}</span>
+                        <button onclick="deleteTask(${t.id})">Delete</button>
+                    </li>
+                `).join('');
+            } catch {
+                document.getElementById('status').textContent = 'Failed to load tasks';
+            }
+        }
+
+        async function addTask() {
+            const input = document.getElementById('taskInput');
+            const title = input.value.trim();
+            if (!title) return;
+            await fetch(`${API}/tasks`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title })
+            });
+            input.value = '';
+            loadTasks();
+        }
+
+        async function toggleTask(id) {
+            await fetch(`${API}/tasks/${id}`, { method: 'PATCH' });
+            loadTasks();
+        }
+
+        async function deleteTask(id) {
+            await fetch(`${API}/tasks/${id}`, { method: 'DELETE' });
+            loadTasks();
+        }
+
+        loadVersion();
+        loadTasks();
+    </script>
+</body>
+</html>
