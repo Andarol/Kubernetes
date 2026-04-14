@@ -18,6 +18,7 @@ spec:
     helm:
       values: |
         loki:
+          isDefault: false
           persistence:
             enabled: false
           tolerations:
@@ -32,8 +33,6 @@ spec:
               effect: NoSchedule
         grafana:
           enabled: false
-          datasource:
-            isDefault: false
   project: default
   syncPolicy:
     automated:
