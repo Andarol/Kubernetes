@@ -93,6 +93,7 @@
   until: gitlab_health.rc == 0
   changed_when: false
   failed_when: false
+  timeout: 120
 
 - name: Create GitLab API token via rails console
   ansible.builtin.command: >-

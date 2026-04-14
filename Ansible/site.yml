@@ -7,7 +7,6 @@
   roles:
     - k8s_cp
     - helm
-    - istio
 
 - name: Configure Kubernetes Worker Nodes
   hosts: workers
