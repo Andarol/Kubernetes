@@ -85,8 +85,9 @@
 - name: Ensure containerd config_path is set on all nodes
   ansible.builtin.lineinfile:
     path: /etc/containerd/config.toml
-    regexp: '^\s*config_path = ""'
-    line: '      config_path = "/etc/containerd/certs.d"'
+    regexp: "^\\s*config_path = ''"
+    line: "      config_path = '/etc/containerd/certs.d'"
+    firstmatch: true
   delegate_to: "{{ item }}"
   loop: "{{ groups['control_plane'] + groups['workers'] }}"
   register: containerd_config_path

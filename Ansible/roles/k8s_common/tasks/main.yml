@@ -86,7 +86,7 @@
   ansible.builtin.shell: |
     containerd config default | tee /etc/containerd/config.toml
     sed -e 's/SystemdCgroup = false/SystemdCgroup = true/g' -i /etc/containerd/config.toml
-    sed -i 's|config_path = ""|config_path = "/etc/containerd/certs.d"|g' /etc/containerd/config.toml
+    sed -i "0,/config_path = ''/s|config_path = ''|config_path = '/etc/containerd/certs.d'|" /etc/containerd/config.toml
   become: true
   notify: restart containerd
 
