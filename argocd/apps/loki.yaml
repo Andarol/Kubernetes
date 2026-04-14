@@ -32,11 +32,6 @@ spec:
               effect: NoSchedule
         grafana:
           enabled: false
-          sidecar:
-            datasources:
-              enabled: true
-              isDefaultDatasource: false
-        loki-stack:
           datasource:
             isDefault: false
   project: default
