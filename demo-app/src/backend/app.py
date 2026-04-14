@@ -11,7 +11,7 @@ VERSION = os.getenv("APP_VERSION", "1.0.0")
 
 def get_db():
     return psycopg2.connect(
-        host=os.getenv("DB_HOST", "simple-app-db"),
+        host=os.getenv("DB_HOST", "demo-app-db"),
         port=os.getenv("DB_PORT", "5432"),
         dbname=os.getenv("DB_NAME", "appdb"),
         user=os.getenv("DB_USER", "appuser"),

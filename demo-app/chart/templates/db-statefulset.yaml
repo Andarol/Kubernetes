@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: simple-app-db
+  name: demo-app-db
   labels:
-    app: simple-app
+    app: demo-app
     component: db
 spec:
-  serviceName: simple-app-db
+  serviceName: demo-app-db
   replicas: 1
   selector:
     matchLabels:
-      app: simple-app
+      app: demo-app
       component: db
   template:
     metadata:
       labels:
-        app: simple-app
+        app: demo-app
         component: db
     spec:
       {{- with .Values.tolerations }}
@@ -29,7 +29,7 @@ spec:
             - containerPort: 5432
           envFrom:
             - secretRef:
-                name: simple-app-db
+                name: demo-app-db
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data

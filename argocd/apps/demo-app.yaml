@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: simple-app
+  name: demo-app
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
@@ -9,15 +9,15 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Andarol/Kubernetes.git
-    path: simple-app/chart
+    path: demo-app/chart
     targetRevision: HEAD
     helm:
       values: |
         global:
-          registry: "192.168.122.100:5050/root/simple-app"
+          registry: "192.168.122.100:5050/root/demo-app"
   destination:
     server: https://kubernetes.default.svc
-    namespace: simple-app
+    namespace: demo-app
   syncPolicy:
     automated:
       prune: true

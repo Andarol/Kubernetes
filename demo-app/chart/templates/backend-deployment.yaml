@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: simple-app-backend
+  name: demo-app-backend
   labels:
-    app: simple-app
+    app: demo-app
     component: backend
 spec:
   replicas: {{ .Values.backend.replicas }}
   selector:
     matchLabels:
-      app: simple-app
+      app: demo-app
       component: backend
   template:
     metadata:
       labels:
-        app: simple-app
+        app: demo-app
         component: backend
     spec:
       {{- with .Values.tolerations }}
@@ -24,7 +24,7 @@ spec:
       initContainers:
         - name: wait-db
           image: busybox:1.36
-          command: ['sh', '-c', 'until nc -z simple-app-db 5432; do sleep 2; done']
+          command: ['sh', '-c', 'until nc -z demo-app-db 5432; do sleep 2; done']
           resources:
             requests:
               cpu: 10m
@@ -39,23 +39,23 @@ spec:
             - containerPort: 8080
           env:
             - name: DB_HOST
-              value: simple-app-db
+              value: demo-app-db
             - name: DB_PORT
               value: "5432"
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: simple-app-db
+                  name: demo-app-db
                   key: POSTGRES_DB
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: simple-app-db
+                  name: demo-app-db
                   key: POSTGRES_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: simple-app-db
+                  name: demo-app-db
                   key: POSTGRES_PASSWORD
             - name: APP_VERSION
               value: {{ .Values.backend.env.APP_VERSION | quote }}

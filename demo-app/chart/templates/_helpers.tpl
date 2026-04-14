@@ -1,7 +1,7 @@
-{{- define "simple-app.name" -}}
-simple-app
+{{- define "demo-app.name" -}}
+demo-app
 {{- end -}}
 
-{{- define "simple-app.labels" -}}
+{{- define "demo-app.labels" -}}
 app.kubernetes.io/managed-by: Helm
 {{- end -}}

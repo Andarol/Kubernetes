@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: simple-app-frontend
+  name: demo-app-frontend
   labels:
-    app: simple-app
+    app: demo-app
     component: frontend
 spec:
   replicas: {{ .Values.frontend.replicas }}
   selector:
     matchLabels:
-      app: simple-app
+      app: demo-app
       component: frontend
   template:
     metadata:
       labels:
-        app: simple-app
+        app: demo-app
         component: frontend
     spec:
       {{- with .Values.tolerations }}
