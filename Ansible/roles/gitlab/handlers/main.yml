@@ -1,0 +1,7 @@
+---
+- name: restart containerd on all nodes
+  ansible.builtin.service:
+    name: containerd
+    state: restarted
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['all'] }}"
