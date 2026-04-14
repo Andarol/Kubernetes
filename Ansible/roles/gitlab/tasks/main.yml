@@ -82,6 +82,45 @@
       - "GitLab registry: {{ ansible_host }}:{{ gitlab_registry_port }}"
       - "Persistent data directory: {{ gitlab_base_dir }}"
 
+- name: Ensure containerd config_path is set on all nodes
+  ansible.builtin.lineinfile:
+    path: /etc/containerd/config.toml
+    regexp: '^\s*config_path = ""'
+    line: '      config_path = "/etc/containerd/certs.d"'
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['all'] }}"
+  register: containerd_config_path
+
+- name: Create containerd registry config directory on all nodes
+  ansible.builtin.file:
+    path: "/etc/containerd/certs.d/{{ ansible_host }}:{{ gitlab_registry_port }}"
+    state: directory
+    mode: '0755'
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['all'] }}"
+
+- name: Configure containerd to use HTTP for GitLab registry on all nodes
+  ansible.builtin.copy:
+    content: |
+      server = "http://{{ ansible_host }}:{{ gitlab_registry_port }}"
+
+      [host."http://{{ ansible_host }}:{{ gitlab_registry_port }}"]
+        capabilities = ["pull", "resolve"]
+        skip_verify = true
+    dest: "/etc/containerd/certs.d/{{ ansible_host }}:{{ gitlab_registry_port }}/hosts.toml"
+    mode: '0644'
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['all'] }}"
+  register: containerd_registry_config
+
+- name: Restart containerd on all nodes
+  ansible.builtin.service:
+    name: containerd
+    state: restarted
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['all'] }}"
+  when: containerd_config_path.changed or containerd_registry_config.changed
+
 # --- Create API token and project ---
 
 - name: Wait for GitLab internals to be fully ready
