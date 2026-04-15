@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 VERSION = os.getenv("APP_VERSION", "1.0.0")
-
+#small changes
 def get_db():
     return psycopg2.connect(
         host=os.getenv("DB_HOST", "demo-app-db"),
