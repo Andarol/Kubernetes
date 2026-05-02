@@ -15,10 +15,11 @@ spec:
       values: |
         controller:
           service:
+            enabled: true
             type: NodePort
             nodePorts:
-              http: 30080
-              https: 30443
+              http: 32080
+              https: 32443
           hostNetwork: false
           tolerations:
             - key: node-role.kubernetes.io/control-plane

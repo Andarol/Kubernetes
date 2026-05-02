@@ -32,7 +32,7 @@ db:
 
 ingress:
   enabled: true
-  host: demo-app.local
+  host: demo-app.demo-app
 
 tolerations:
   - key: node-role.kubernetes.io/control-plane

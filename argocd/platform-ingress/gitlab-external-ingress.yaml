@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab-external
+  namespace: argocd
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: gitlab-external
+  namespace: argocd
+subsets:
+  - addresses:
+      - ip: 192.168.122.100
+    ports:
+      - name: http
+        port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitlab-external
+  namespace: argocd
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: gitlab.demo-app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitlab-external
+                port:
+                  number: 80
