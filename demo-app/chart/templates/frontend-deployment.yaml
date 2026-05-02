@@ -24,6 +24,7 @@ spec:
       containers:
         - name: frontend
           image: "{{ if .Values.global.registry }}{{ .Values.global.registry }}/{{ end }}{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           resources:

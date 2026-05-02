@@ -35,6 +35,7 @@ spec:
       containers:
         - name: backend
           image: "{{ if .Values.global.registry }}{{ .Values.global.registry }}/{{ end }}{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
