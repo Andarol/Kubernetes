@@ -4,7 +4,7 @@ global:
 frontend:
   image:
     repository: frontend
-    tag: "latest"
+    tag: "latest"  # frontend
   replicas: 1
   service:
     type: ClusterIP
@@ -13,7 +13,7 @@ frontend:
 backend:
   image:
     repository: backend
-    tag: "latest"
+    tag: "latest"  # backend
   replicas: 1
   env:
     APP_VERSION: "1.0.0"

@@ -1,5 +1,6 @@
 stages:
   - build
+  - update-chart
 
 variables:
   DOCKER_BUILDKIT: "1"
@@ -25,3 +26,22 @@ build-backend:
     - docker build --pull --provenance=false --sbom=false -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/backend:latest src/backend
     - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
     - docker push $CI_REGISTRY_IMAGE/backend:latest
+
+update-chart:
+  stage: update-chart
+  tags:
+    - docker
+  before_script: []
+  script:
+    - apk add --no-cache git sed
+    - git config user.email "ci@gitlab.local"
+    - git config user.name "GitLab CI"
+    - git remote set-url origin http://root:${GITLAB_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_PATH}.git
+    - sed -i "s/^\(\s*tag:\s*\)\".*\"  # frontend$/\1\"${CI_COMMIT_SHORT_SHA}\"  # frontend/" chart/values.yaml
+    - sed -i "s/^\(\s*tag:\s*\)\".*\"  # backend$/\1\"${CI_COMMIT_SHORT_SHA}\"  # backend/" chart/values.yaml
+    - git add chart/values.yaml
+    - git diff --cached --quiet && echo "No changes to commit" && exit 0
+    - git commit -m "ci: update image tags to ${CI_COMMIT_SHORT_SHA} [skip ci]"
+    - git push origin HEAD:${CI_COMMIT_REF_NAME}
+  only:
+    - main
