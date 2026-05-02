@@ -1,5 +1,21 @@
 ---
-- name: Install GitLab container dependencies
+- name: Redirect port 80 to ingress-nginx NodePort 32080
+  ansible.builtin.iptables:
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    destination_port: "80"
+    jump: REDIRECT
+    to_ports: "32080"
+    comment: "ingress-nginx redirect"
+  register: iptables_redirect
+
+- name: Persist iptables rules
+  ansible.builtin.shell: |
+    mkdir -p /etc/iptables && iptables-save > /etc/iptables/rules.v4
+  when: iptables_redirect.changed
+
+- name: Install Docker container dependencies
   ansible.builtin.apt:
     name:
       - docker-ce
@@ -61,7 +77,7 @@
 
 - name: Wait for GitLab web UI to become available
   ansible.builtin.uri:
-    url: "{{ gitlab_external_url }}/users/sign_in"
+    url: "http://{{ ansible_host }}:{{ gitlab_http_port }}/users/sign_in"
     method: GET
     status_code:
       - 200
@@ -153,7 +169,7 @@
 
 - name: Wait for GitLab API to accept token
   ansible.builtin.uri:
-    url: "{{ gitlab_external_url }}/api/v4/version"
+    url: "{{ gitlab_host_url }}/api/v4/version"
     method: GET
     headers:
       PRIVATE-TOKEN: "{{ gitlab_api_token }}"
@@ -165,7 +181,7 @@
 
 - name: Create GitLab projects
   ansible.builtin.uri:
-    url: "{{ gitlab_external_url }}/api/v4/projects"
+    url: "{{ gitlab_host_url }}/api/v4/projects"
     method: POST
     headers:
       PRIVATE-TOKEN: "{{ gitlab_api_token }}"
@@ -214,7 +230,7 @@
 
 - name: Unprotect main branch to allow force push
   ansible.builtin.uri:
-    url: "{{ gitlab_external_url }}/api/v4/projects/root%2F{{ item.name }}/protected_branches/main"
+    url: "{{ gitlab_host_url }}/api/v4/projects/root%2F{{ item.name }}/protected_branches/main"
     method: DELETE
     headers:
       PRIVATE-TOKEN: "{{ gitlab_api_token }}"
@@ -228,7 +244,7 @@
 - name: Push code to GitLab projects
   ansible.builtin.shell: |
     cd "{{ item.local_path }}"
-    git push "http://root:${GITLAB_TOKEN}@{{ ansible_host }}/root/{{ item.name }}.git" main --force 2>&1
+    git push "http://root:${GITLAB_TOKEN}@{{ ansible_host }}:{{ gitlab_http_port }}/root/{{ item.name }}.git" main --force 2>&1
   environment:
     GITLAB_TOKEN: "{{ gitlab_api_token }}"
   delegate_to: localhost
@@ -264,7 +280,7 @@
 
 - name: Create runner via GitLab API
   ansible.builtin.uri:
-    url: "{{ gitlab_external_url }}/api/v4/user/runners"
+    url: "{{ gitlab_host_url }}/api/v4/user/runners"
     method: POST
     headers:
       PRIVATE-TOKEN: "{{ gitlab_api_token }}"
@@ -284,7 +300,7 @@
   ansible.builtin.shell: >-
     docker exec gitlab-runner gitlab-runner register
     --non-interactive
-    --url "{{ gitlab_external_url }}"
+    --url "{{ gitlab_host_url }}"
     --token "{{ runner_api_result.json.token }}"
     --executor docker
     --docker-image "docker:latest"
