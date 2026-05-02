@@ -3,8 +3,8 @@ gitlab_container_name: gitlab
 gitlab_image: gitlab/gitlab-ce:latest
 gitlab_base_dir: /srv/gitlab
 gitlab_compose_dir: /opt/gitlab
-gitlab_external_url: "http://{{ ansible_host }}"
 gitlab_http_port: 8808
+gitlab_external_url: "http://{{ ansible_host }}:{{ gitlab_http_port }}"
 gitlab_host_url: "http://{{ ansible_host }}:{{ gitlab_http_port }}"
 gitlab_https_port: 443
 gitlab_ssh_port: 2224
