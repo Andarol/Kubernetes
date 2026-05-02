@@ -1,20 +1,4 @@
 ---
-- name: Redirect port 80 to ingress-nginx NodePort 32080
-  ansible.builtin.iptables:
-    table: nat
-    chain: PREROUTING
-    protocol: tcp
-    destination_port: "80"
-    jump: REDIRECT
-    to_ports: "32080"
-    comment: "ingress-nginx redirect"
-  register: iptables_redirect
-
-- name: Persist iptables rules
-  ansible.builtin.shell: |
-    mkdir -p /etc/iptables && iptables-save > /etc/iptables/rules.v4
-  when: iptables_redirect.changed
-
 - name: Install Docker container dependencies
   ansible.builtin.apt:
     name:
