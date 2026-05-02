@@ -20,7 +20,7 @@ spec:
             enabled: true
             ports:
               http: 80
-              https: 443
+              https: 8443
           service:
             enabled: true
             type: NodePort
@@ -28,6 +28,8 @@ spec:
               http: 32080
               https: 32443
           hostNetwork: true
+          extraArgs:
+            https-port: "8443"
           tolerations:
             - key: node-role.kubernetes.io/control-plane
               operator: Exists
