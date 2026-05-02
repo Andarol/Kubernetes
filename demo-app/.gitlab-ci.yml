@@ -29,6 +29,7 @@ build-backend:
 
 update-chart:
   stage: update-chart
+  image: alpine:3.19
   tags:
     - docker
   before_script: []
