@@ -5,8 +5,6 @@ metadata:
   name: demo-app
   labels:
     app: demo-app
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
