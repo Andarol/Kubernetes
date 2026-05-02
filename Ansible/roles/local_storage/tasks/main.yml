@@ -1,11 +1,10 @@
 ---
   - name: Label worker nodes for storage
     shell: kubectl label nodes {{ item }} node-role.kubernetes.io/worker="" --overwrite
-    loop:
-      - worker1
-      - gitlab
+    loop: "{{ groups['workers'] }}"
     register: label_result
     changed_when: "'labeled' in label_result.stdout"
+    failed_when: label_result.rc != 0 and 'NotFound' not in label_result.stderr
 
   - name: Copy storage provisioner manifest
     copy:
