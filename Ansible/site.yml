@@ -16,13 +16,13 @@
   roles:
     - k8s_worker
 
-# - name: Configure Storage Provisioner
-#   hosts: control_plane
-#   become: true
-#   vars_files:
-#     - inventories/vault.yml
-#   roles:
-#     - local_storage
+- name: Configure Storage Provisioner
+  hosts: control_plane
+  become: true
+  vars_files:
+    - inventories/vault.yml
+  roles:
+    - local_storage
 
 - name: Install ArgoCD
   hosts: control_plane
