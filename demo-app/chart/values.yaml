@@ -7,7 +7,7 @@ frontend:
     tag: "latest"
   replicas: 1
   service:
-    type: NodePort
+    type: ClusterIP
     port: 80
 
 backend:
@@ -29,6 +29,10 @@ db:
     POSTGRES_DB: appdb
     POSTGRES_USER: appuser
     POSTGRES_PASSWORD: apppass
+
+ingress:
+  enabled: true
+  host: demo-app.local
 
 tolerations:
   - key: node-role.kubernetes.io/control-plane
