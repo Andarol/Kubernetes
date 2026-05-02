@@ -27,7 +27,7 @@ spec:
             nodePorts:
               http: 32080
               https: 32443
-          hostNetwork: false
+          hostNetwork: true
           tolerations:
             - key: node-role.kubernetes.io/control-plane
               operator: Exists
